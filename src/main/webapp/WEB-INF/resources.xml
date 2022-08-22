@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+  <Resource id="pgDatasource" type="javax.sql.DataSource">#Sun Aug 21 17:05:14 BRT 2022
+password=m31361
+jdbcDriver=org.postgresql.Driver
+jdbcUrl=jdbc\:postgresql\://localhost\:5432/infra
+userName=paulo
+</Resource>
+</resources>

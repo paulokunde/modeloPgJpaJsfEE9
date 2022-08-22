@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title><ui:insert name="title">Default Title</ui:insert></title>
+        <h:outputStylesheet library="css" name="jsfcrud.css"/>
+        <h:outputScript library="js" name="jsfcrud.js"/>
+        <h:outputText value="#{bundle.ListMarcaTitle}"></h:outputText>
+    </h:head>
+
+    <!-- ui:composition template="/template.xhtml" -->
+
+
+    <!-- ui:define name="title" -->
+
+    <h:body>
+        <p:growl id="growl" life="3000" />
+
+        <div position="north" size="65" header="#{bundle.AppName}">
+            <h:form id="menuForm">
+                <p:menubar>
+                    <p:menuitem value="#{bundle.Home}" outcome="/index" icon="ui-icon-home"/>
+                    <p:submenu label="#{bundle.Maintenance}">
+
+                        <p:menuitem value="Marca" outcome="/jsf/marca/List.xhtml" />
+
+                    </p:submenu>
+                </p:menubar>
+            </h:form>
+        </div>
+
+        <!-- ui:define name="body" -->
+        <h:form id="MarcaListForm">
+            <p:panel header="#{bundle.ListMarcaTitle}">
+                <p:dataTable id="datalist" value="#{marcaController.items}" var="item"
+                             selectionMode="single" selection="#{marcaController.selected}"
+                             paginator="true"
+                             rowKey="#{item.id}"
+                             rows="10"
+                             rowsPerPageTemplate="10,20,30,40,50"
+                             >
+
+                    <p:ajax event="rowSelect"   update="createButton viewButton editButton deleteButton"/>
+                    <p:ajax event="rowUnselect" update="createButton viewButton editButton deleteButton"/>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.ListMarcaTitle_id}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.id}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.ListMarcaTitle_nome}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.nome}"/>
+                    </p:column>
+                    <f:facet name="footer">
+                        <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{marcaController.prepareCreate}" update=":MarcaCreateForm" oncomplete="PF('MarcaCreateDialog').show()"/>
+                        <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" update=":MarcaViewForm" oncomplete="PF('MarcaViewDialog').show()" disabled="#{empty marcaController.selected}"/>
+                        <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":MarcaEditForm" oncomplete="PF('MarcaEditDialog').show()" disabled="#{empty marcaController.selected}"/>
+                        <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{marcaController.destroy}" update=":growl,datalist" disabled="#{empty marcaController.selected}"/>
+                    </f:facet>
+                </p:dataTable>
+            </p:panel>
+        </h:form>
+
+        <p:dialog id="MarcaCreateDlg" widgetVar="MarcaCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.CreateMarcaTitle}">
+            <h:form id="MarcaCreateForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{marcaController.selected != null}">
+                        <p:outputLabel value="#{bundle.CreateMarcaLabel_id}" for="id" />
+                        <p:inputText id="id" value="#{marcaController.selected.id}" title="#{bundle.CreateMarcaTitle_id}" required="true" requiredMessage="#{bundle.CreateMarcaRequiredMessage_id}"/>
+                        <p:outputLabel value="#{bundle.CreateMarcaLabel_nome}" for="nome" />
+                        <p:inputText id="nome" value="#{marcaController.selected.nome}" title="#{bundle.CreateMarcaTitle_nome}" />
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{marcaController.create}" value="#{bundle.Save}" update="display,:MarcaListForm:datalist,:growl" oncomplete="handleSubmit(args,'MarcaCreateDialog');"/>
+                    <p:commandButton value="#{bundle.Cancel}" onclick="MarcaCreateDialog.hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+
+        <p:dialog id="MarcaEditDlg" widgetVar="MarcaEditDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.EditMarcaTitle}">
+            <h:form id="MarcaEditForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{marcaController.selected != null}">
+                        <p:outputLabel value="#{bundle.EditMarcaLabel_id}" for="id" />
+                        <p:inputText id="id" value="#{marcaController.selected.id}" title="#{bundle.EditMarcaTitle_id}" required="true" requiredMessage="#{bundle.EditMarcaRequiredMessage_id}"/>
+                        <p:outputLabel value="#{bundle.EditMarcaLabel_nome}" for="nome" />
+                        <p:inputText id="nome" value="#{marcaController.selected.nome}" title="#{bundle.EditMarcaTitle_nome}" />
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{marcaController.update}" value="#{bundle.Save}" update="display,:MarcaListForm:datalist,:growl" oncomplete="handleSubmit(args, 'MarcaEditDialog');"/>
+                    <p:commandButton value="#{bundle.Cancel}" onclick="MarcaEditDialog.hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+
+        <p:dialog id="MarcaViewDlg" widgetVar="MarcaViewDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.ViewMarcaTitle}">
+            <h:form id="MarcaViewForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{marcaController.selected != null}">
+                        <h:outputText value="#{bundle.ViewMarcaLabel_id}"/>
+                        <h:outputText value="#{marcaController.selected.id}" title="#{bundle.ViewMarcaTitle_id}"/>
+                        <h:outputText value="#{bundle.ViewMarcaLabel_nome}"/>
+                        <h:outputText value="#{marcaController.selected.nome}" title="#{bundle.ViewMarcaTitle_nome}"/>
+                    </p:panelGrid>
+                    <p:commandButton value="#{bundle.Close}" onclick="MarcaViewDialog.hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+        <!-- /ui:define -->
+    </h:body>
+    <!-- /ui:composition -->
+
+</html>
