@@ -6,9 +6,15 @@
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:ui="http://java.sun.com/jsf/facelets">
-    <h:body>
-    	<ui:composition> 
-          <h1>Header</h1>
-        </ui:composition>
-    </h:body>    
+<h:body>
+	<ui:composition template="main.xhtml">	
+        <ui:define name="content">				
+            <br/>
+            <h:link value="Test Page" outcome="test" />
+            <br/><br/>
+            <h:link value="Welcome Page" outcome="welcome" />			
+            <br/>
+        </ui:define>
+     </ui:composition>
+</h:body>
 </html>

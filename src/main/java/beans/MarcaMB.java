@@ -12,13 +12,12 @@ import java.io.Serializable;
 import lombok.Getter;
 import lombok.Setter;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
 @Named(value = "marcaMB")
 @ViewScoped
-public class MarcaMB implements Serializable{
+public class MarcaMB implements Serializable {
 
     @Getter
     @Setter
@@ -29,17 +28,32 @@ public class MarcaMB implements Serializable{
     private Marca marca;
 
     @Inject
-    //@EJB
     private MarcaFacade marcaFacade;
-    
+
     @PostConstruct
-    public void listarTodos(){
-        EntityManager em = marcaFacade.getEntityManager();
+    public void listarTodos() {
         marcas = marcaFacade.findAll();
-        System.out.println("Postconstruct Invocado, Lista:"+getTamanhoDaLista());
-       
+        System.out.println("Postconstruct Invocado, Lista:" + getTamanhoDaLista());
     }
-            
+
+    public void salvar() {
+        try {
+
+            marcaFacade.create(marca);
+            System.out.println("salvando....OK");
+            //return "Item Salvo";
+
+        } catch (Exception e) {
+            System.out.println("Erro ao Salvar....");
+            //return "Erro ao Salvar";
+        }
+    }
+
+    public void update() {
+        marcaFacade.edit(marca);
+        System.out.println("Update de Marca....");
+    }
+
     public Integer getTamanhoDaLista() {
         return marcas.size();
     }
@@ -47,6 +61,5 @@ public class MarcaMB implements Serializable{
     public void setTamanhoDaLista(Integer size) {
         // Método criado para ser utilizado pelo primefaces
     }
-    
-    
+
 }

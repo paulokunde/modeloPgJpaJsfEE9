@@ -21,7 +21,7 @@
         </script>
         <title>Lista de Alunos</title>
     </h:head>
-    <f:view>
+    <f:view id="view" >
         <p:dialog modal="true" widgetVar="statusDialog" header="Status" draggable="false" closable="false"
                   resizable="false">
             <p:graphicImage name="/images/ajaxloadingbar.gif"/>
@@ -74,16 +74,23 @@
                         <h:outputText id="outputNome"
                                       value="#{item.nome}"/>
                     </p:column>
-                 
-                   
+
+
                     <p:column style="width:10%;text-align: center" headerText="Acoes" exportable="false">
                         <p:commandButton update=":formMarcas:marcaDetail" oncomplete="PF('itemDialog').show()"
                                          icon="ui-icon-search"
                                          title="Detalhe">
                             <f:setPropertyActionListener value="#{item}" target="#{marcaMB.marca}"/>
                         </p:commandButton>
+                        
+                        <p:commandButton update="display" oncomplete="PF('MarcaEditDialog').show()"
+                                         icon="ui-icon-search"
+                                         title="Editar">
+                            <f:setPropertyActionListener value="#{item}" target="#{marcaMB.marca}"/>
+                        </p:commandButton>
                     </p:column>
                 </p:dataTable>
+
                 <p:dialog header="Detalhes da Marca" widgetVar="itemDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
                     <p:outputPanel id="marcaDetail" style="text-align:center;">
                         <p:panelGrid columns="2" rendered="#{not empty marcaMB.marca}" columnClasses="label,value">
@@ -95,13 +102,29 @@
                             <h:inputText value="#{marcaMB.marca.id}" disabled="#{true}"/>
 
                             <h:outputText value="Nome"/>
-                            <h:inputText value="#{marcaMB.marca.nome}" disabled="true"/>
+                            <h:inputText value="#{marcaMB.marca.nome}" disabled="false"/>
                         </p:panelGrid>
                         <p:panelGrid columns="2" columnClasses="label,value">
                             <p:button id="btnFechar" value="Fechar" icon="ui-icon-plusthick"/>
                         </p:panelGrid>
                     </p:outputPanel>
                 </p:dialog>
+
+                <p:dialog id="MarcaEditDlg" widgetVar="MarcaEditDialog" modal="true" resizable="false" header="#{bundle.EditMarcaTitle}">
+                   
+                    <h:panelGroup id="display">
+                        <p:panelGrid columns="2" rendered="#{marcaMB.marca != null}">
+                            <p:outputLabel value="#{bundle.EditMarcaLabel_id}" for="id"  />
+                            <p:inputText id="id" value="#{marcaMB.marca.id}" title="#{bundle.EditMarcaTitle_id}" disabled="true" requiredMessage="#{bundle.EditMarcaRequiredMessage_id}"/>
+                            <p:outputLabel value="#{bundle.EditMarcaLabel_nome}" for="nome" />
+                            <p:inputText id="nome" value="#{marcaMB.marca.nome}" required="true" title="#{bundle.EditMarcaTitle_nome}" />
+                        </p:panelGrid>
+                        <p:commandButton actionListener="#{marcaMB.update}" value="Salvar"  />
+                        <p:commandButton value="Cancelar" onclick="MarcaEditDialog.hide()"/>
+                    </h:panelGroup>
+                
+                </p:dialog>
+
             </h:form>
         </h:body>
     </f:view>

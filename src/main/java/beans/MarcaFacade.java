@@ -5,7 +5,6 @@
 package beans;
 
 import entidades.Marca;
-import jakarta.ejb.Stateless;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Named;
 import jakarta.persistence.EntityManager;
@@ -16,7 +15,7 @@ import jakarta.persistence.PersistenceContext;
  * @author paulo
  */
 @RequestScoped
-//@Named
+@Named
 //@Stateless
 public class MarcaFacade extends AbstractFacade<Marca>{
     @PersistenceContext(unitName = "pgPU")

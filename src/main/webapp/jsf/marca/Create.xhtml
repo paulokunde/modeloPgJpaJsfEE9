@@ -17,8 +17,8 @@
                         <p:outputLabel value="#{bundle.CreateMarcaLabel_nome}" for="nome" />
                         <p:inputText id="nome" value="#{marcaController.selected.nome}" title="#{bundle.CreateMarcaTitle_nome}" />
                     </p:panelGrid>
-                    <p:commandButton actionListener="#{marcaController.create}" value="#{bundle.Save}" update="display,:MarcaListForm:datalist,:growl" oncomplete="handleSubmit(args,'MarcaCreateDialog');"/>
-                    <p:commandButton value="#{bundle.Cancel}" onclick="MarcaCreateDialog.hide()"/>
+                    <p:commandButton actionListener="#{marcaController.create}" label="Salvar" value="Salvar" update="display,:MarcaListForm:datalist,:growl" oncomplete="handleSubmit(args,'MarcaCreateDialog');"/>
+                    <p:commandButton value="Cancelar" onclick="MarcaCreateDialog.hide()"/>
                 </h:panelGroup>
             </h:form>
         </p:dialog>
