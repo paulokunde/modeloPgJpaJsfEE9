@@ -11,6 +11,7 @@ import jakarta.faces.convert.FacesConverter;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import jakarta.transaction.Transactional;
 import java.io.Serializable;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -23,7 +24,7 @@ import java.util.logging.Logger;
  */
 @Named
 @ViewScoped
-public class MarcaController implements Serializable{
+public class MarcaController implements Serializable {
 
     private Integer id;
     private String nome;
@@ -33,13 +34,13 @@ public class MarcaController implements Serializable{
     }
 
     @Inject
-    private beans.MarcaFacade marcaFacade;
-    
+    private beans.MarcaFacade dao;
+
     private List<Marca> items = null;
     private Marca selected;
 
     private MarcaFacade getFacade() {
-        return marcaFacade;
+        return dao;
     }
 
     public Marca prepareCreate() {
@@ -53,7 +54,7 @@ public class MarcaController implements Serializable{
 
     protected void initializeEmbeddableKey() {
     }
-
+     @Transactional
     public void create() {
         persist(JsfUtil.PersistAction.CREATE, ResourceBundle.getBundle("/Bundle").getString("MarcaCreated"));
         if (!JsfUtil.isValidationFailed()) {
@@ -61,10 +62,12 @@ public class MarcaController implements Serializable{
         }
     }
 
+    @Transactional
     public void update() {
         persist(JsfUtil.PersistAction.UPDATE, ResourceBundle.getBundle("/Bundle").getString("MarcaUpdated"));
     }
 
+    @Transactional
     public void destroy() {
         persist(JsfUtil.PersistAction.DELETE, ResourceBundle.getBundle("/Bundle").getString("MarcaDeleted"));
         if (!JsfUtil.isValidationFailed()) {
@@ -80,6 +83,7 @@ public class MarcaController implements Serializable{
         return items;
     }
 
+    //@Transactional
     private void persist(JsfUtil.PersistAction persistAction, String successMessage) {
         if (selected != null) {
             setEmbeddableKeys();
@@ -124,7 +128,7 @@ public class MarcaController implements Serializable{
                 return null;
             }
             MarcaController controller = (MarcaController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "marcaController");
+                    getValue(facesContext.getELContext(), null, "dao");
             return controller.getFacade().find(getKey(value));
         }
 
@@ -163,7 +167,6 @@ public class MarcaController implements Serializable{
         return selected;
     }
 
-    
     public void setSelected(Marca selected) {
         this.selected = selected;
     }
@@ -180,5 +183,5 @@ public class MarcaController implements Serializable{
         this.nome = nome;
     }
 
-    //-----------------------------------------------------
+    
 }

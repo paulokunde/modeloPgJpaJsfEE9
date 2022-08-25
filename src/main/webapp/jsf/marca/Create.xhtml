@@ -13,7 +13,7 @@
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{marcaController.selected != null}">
                         <p:outputLabel value="#{bundle.CreateMarcaLabel_id}" for="id" />
-                        <p:inputText id="id" value="#{marcaController.selected.id}" title="#{bundle.CreateMarcaTitle_id}" required="true" requiredMessage="#{bundle.CreateMarcaRequiredMessage_id}"/>
+                        <p:inputText id="id" value="#{marcaController.selected.id}" title="#{bundle.CreateMarcaTitle_id}" required="false" disabled="true" requiredMessage="#{bundle.CreateMarcaRequiredMessage_id}"/>
                         <p:outputLabel value="#{bundle.CreateMarcaLabel_nome}" for="nome" />
                         <p:inputText id="nome" value="#{marcaController.selected.nome}" title="#{bundle.CreateMarcaTitle_nome}" />
                     </p:panelGrid>

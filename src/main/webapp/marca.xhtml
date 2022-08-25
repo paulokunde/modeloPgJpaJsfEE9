@@ -4,7 +4,6 @@
 <html
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:p="http://primefaces.org/ui"
-    xml:lang="en"
     xmlns:f="http://xmlns.jcp.org/jsf/core">
     <h:head>
         <script type="text/javascript">
@@ -28,40 +27,42 @@
         </p:dialog>
         <p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()"/>
         <h:body>
-            <h:form id="formMarcas" prependId="false">
+            <h:form id="formulario" prependId="false">
                 <h:commandLink action="#{marcaMB.listarTodos}" value="Recarregar a listagem!" >
                     <p:graphicImage name="/images/refresh.png" alt="Recarregar listagem!" width="24"/>
                 </h:commandLink>
                 <p:growl id="mensagens" showDetail="true" >
                     <p:autoUpdate/>
                 </p:growl>
-                <p:dataTable id="tabelaMarca" var="item" value="#{marcaMB.marcas}" 
+                <p:dataTable id="tabela" var="item" value="#{marcaMB.marcas}" 
                              paginator="true" rows="25" emptyMessage="Não há marcas cadastradas."
-                             rowKey="#{item.id}" selectionMode="single"
+                             rowKey="#{item.id}" selectionMode="single" 
                              paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}
-                             {RowsPerPageDropdown} {Exporters}"
+                             {RowsPerPageDropdown} {Exporters}" 
                              selection="#{marcaMB.marca}"
                              rowsPerPageTemplate="10,15,25,50,100">
                     <f:facet name="{Exporters}">
                         <h:commandLink id="exportExcel">
                             <p:graphicImage name="/images/excel.png" width="24"/>
-                            <p:dataExporter type="xls" target="tabelaMarca" fileName="listaMarcas"/>
+                            <p:dataExporter type="xls" target="tabela" fileName="listaMarcas"/>
                         </h:commandLink>
                         <h:commandLink id="exportPDF">
                             <p:graphicImage name="/images/pdf.png" width="24"/>
-                            <p:dataExporter type="pdf" target="tabelaMarca" fileName="listaMarcas"/>
+                            <p:dataExporter type="pdf" target="tabela" fileName="listaMarcas"/>
                         </h:commandLink>
                         <h:commandLink id="exportCSV">
                             <p:graphicImage name="/images/csv.png" width="24"/>
-                            <p:dataExporter type="csv" target="tabelaMarca" fileName="listaMarcas"/>
+                            <p:dataExporter type="csv" target="tabela" fileName="listaMarcas"/>
                         </h:commandLink>
                         <h:commandLink id="exportXML">
                             <p:graphicImage name="/images/xml.png" width="24"/>
-                            <p:dataExporter type="xml" target="tabelaMarca" fileName="listaMarcas"/>
+                            <p:dataExporter type="xml" target="tabela" fileName="listaMarcas"/>
                         </h:commandLink>
                     </f:facet>
 
-                    <f:facet name="header"><p:outputLabel value="Lista de Marcas: #{marcaMB.tamanhoDaLista}"/> </f:facet>
+                    <f:facet name="header">
+                        <p:outputLabel value="Lista de Marcas: #{marcaMB.tamanhoDaLista}"/>
+                    </f:facet>
                     <p:column headerText="ID" style="width: 6%;" sortBy="#{item.id}"
                               filterMatchMode="contains"
                               filterBy="#{item.id}">
@@ -77,22 +78,16 @@
 
 
                     <p:column style="width:10%;text-align: center" headerText="Acoes" exportable="false">
-                        <p:commandButton update=":formMarcas:marcaDetail" oncomplete="PF('itemDialog').show()"
+                        <p:commandButton update=":formulario:detalhe" oncomplete="PF('itemDialog').show()"
                                          icon="ui-icon-search"
                                          title="Detalhe">
-                            <f:setPropertyActionListener value="#{item}" target="#{marcaMB.marca}"/>
-                        </p:commandButton>
-                        
-                        <p:commandButton update="display" oncomplete="PF('MarcaEditDialog').show()"
-                                         icon="ui-icon-search"
-                                         title="Editar">
                             <f:setPropertyActionListener value="#{item}" target="#{marcaMB.marca}"/>
                         </p:commandButton>
                     </p:column>
                 </p:dataTable>
 
                 <p:dialog header="Detalhes da Marca" widgetVar="itemDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
-                    <p:outputPanel id="marcaDetail" style="text-align:center;">
+                    <p:outputPanel id="detalhe" style="text-align:center;">
                         <p:panelGrid columns="2" rendered="#{not empty marcaMB.marca}" columnClasses="label,value">
                             <f:facet name="header">
                                 <h:outputLabel>Marca</h:outputLabel>
@@ -108,21 +103,6 @@
                             <p:button id="btnFechar" value="Fechar" icon="ui-icon-plusthick"/>
                         </p:panelGrid>
                     </p:outputPanel>
-                </p:dialog>
-
-                <p:dialog id="MarcaEditDlg" widgetVar="MarcaEditDialog" modal="true" resizable="false" header="#{bundle.EditMarcaTitle}">
-                   
-                    <h:panelGroup id="display">
-                        <p:panelGrid columns="2" rendered="#{marcaMB.marca != null}">
-                            <p:outputLabel value="#{bundle.EditMarcaLabel_id}" for="id"  />
-                            <p:inputText id="id" value="#{marcaMB.marca.id}" title="#{bundle.EditMarcaTitle_id}" disabled="true" requiredMessage="#{bundle.EditMarcaRequiredMessage_id}"/>
-                            <p:outputLabel value="#{bundle.EditMarcaLabel_nome}" for="nome" />
-                            <p:inputText id="nome" value="#{marcaMB.marca.nome}" required="true" title="#{bundle.EditMarcaTitle_nome}" />
-                        </p:panelGrid>
-                        <p:commandButton actionListener="#{marcaMB.update}" value="Salvar"  />
-                        <p:commandButton value="Cancelar" onclick="MarcaEditDialog.hide()"/>
-                    </h:panelGroup>
-                
                 </p:dialog>
 
             </h:form>

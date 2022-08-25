@@ -12,9 +12,9 @@
             <h:form id="MarcaViewForm">
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{marcaController.selected != null}">
-                        <h:outputText value="#{bundle.ViewMarcaLabel_id}"/>
+                        <h:outputText value="ID"/>
                         <h:outputText value="#{marcaController.selected.id}" title="#{bundle.ViewMarcaTitle_id}"/>
-                        <h:outputText value="#{bundle.ViewMarcaLabel_nome}"/>
+                        <h:outputText value="Nome"/>
                         <h:outputText value="#{marcaController.selected.nome}" title="#{bundle.ViewMarcaTitle_nome}"/>
                     </p:panelGrid>
                     <p:commandButton value="#{bundle.Close}" onclick="MarcaViewDialog.hide()"/>

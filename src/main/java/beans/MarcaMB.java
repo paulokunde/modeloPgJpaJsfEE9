@@ -8,6 +8,7 @@ import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import java.io.Serializable;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,10 +36,10 @@ public class MarcaMB implements Serializable {
         marcas = marcaFacade.findAll();
         System.out.println("Postconstruct Invocado, Lista:" + getTamanhoDaLista());
     }
-
+    
+    @Transactional
     public void salvar() {
         try {
-
             marcaFacade.create(marca);
             System.out.println("salvando....OK");
             //return "Item Salvo";
@@ -48,7 +49,8 @@ public class MarcaMB implements Serializable {
             //return "Erro ao Salvar";
         }
     }
-
+    
+    @Transactional
     public void update() {
         marcaFacade.edit(marca);
         System.out.println("Update de Marca....");
