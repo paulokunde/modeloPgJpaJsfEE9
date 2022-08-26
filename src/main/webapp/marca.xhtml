@@ -4,108 +4,120 @@
 <html
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:p="http://primefaces.org/ui"
-    xmlns:f="http://xmlns.jcp.org/jsf/core">
-    <h:head>
-        <script type="text/javascript">
-            //<![CDATA[
-            function start() {
-                PF('statusDialog').show();
-            }
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
-            function stop() {
-                PF('statusDialog').hide();
-            }
-
-            //]]>
-        </script>
-        <title>Lista de Alunos</title>
-    </h:head>
-    <f:view id="view" >
-        <p:dialog modal="true" widgetVar="statusDialog" header="Status" draggable="false" closable="false"
-                  resizable="false">
-            <p:graphicImage name="/images/ajaxloadingbar.gif"/>
-        </p:dialog>
-        <p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()"/>
-        <h:body>
-            <h:form id="formulario" prependId="false">
-                <h:commandLink action="#{marcaMB.listarTodos}" value="Recarregar a listagem!" >
-                    <p:graphicImage name="/images/refresh.png" alt="Recarregar listagem!" width="24"/>
-                </h:commandLink>
-                <p:growl id="mensagens" showDetail="true" >
-                    <p:autoUpdate/>
-                </p:growl>
-                <p:dataTable id="tabela" var="item" value="#{marcaMB.marcas}" 
-                             paginator="true" rows="25" emptyMessage="Não há marcas cadastradas."
-                             rowKey="#{item.id}" selectionMode="single" 
-                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}
-                             {RowsPerPageDropdown} {Exporters}" 
-                             selection="#{marcaMB.marca}"
-                             rowsPerPageTemplate="10,15,25,50,100">
-                    <f:facet name="{Exporters}">
-                        <h:commandLink id="exportExcel">
-                            <p:graphicImage name="/images/excel.png" width="24"/>
-                            <p:dataExporter type="xls" target="tabela" fileName="listaMarcas"/>
-                        </h:commandLink>
-                        <h:commandLink id="exportPDF">
-                            <p:graphicImage name="/images/pdf.png" width="24"/>
-                            <p:dataExporter type="pdf" target="tabela" fileName="listaMarcas"/>
-                        </h:commandLink>
-                        <h:commandLink id="exportCSV">
-                            <p:graphicImage name="/images/csv.png" width="24"/>
-                            <p:dataExporter type="csv" target="tabela" fileName="listaMarcas"/>
-                        </h:commandLink>
-                        <h:commandLink id="exportXML">
-                            <p:graphicImage name="/images/xml.png" width="24"/>
-                            <p:dataExporter type="xml" target="tabela" fileName="listaMarcas"/>
-                        </h:commandLink>
-                    </f:facet>
-
-                    <f:facet name="header">
-                        <p:outputLabel value="Lista de Marcas: #{marcaMB.tamanhoDaLista}"/>
-                    </f:facet>
-                    <p:column headerText="ID" style="width: 6%;" sortBy="#{item.id}"
-                              filterMatchMode="contains"
-                              filterBy="#{item.id}">
-                        <h:outputText id="outputMatricula"
-                                      value="#{item.id}"/>
-                    </p:column>
-                    <p:column headerText="Nome" style="width: 25%;" sortBy="#{item.nome}"
-                              filterMatchMode="contains"
-                              filterBy="#{item.nome}">
-                        <h:outputText id="outputNome"
-                                      value="#{item.nome}"/>
-                    </p:column>
-
-
-                    <p:column style="width:10%;text-align: center" headerText="Acoes" exportable="false">
-                        <p:commandButton update=":formulario:detalhe" oncomplete="PF('itemDialog').show()"
-                                         icon="ui-icon-search"
-                                         title="Detalhe">
-                            <f:setPropertyActionListener value="#{item}" target="#{marcaMB.marca}"/>
-                        </p:commandButton>
-                    </p:column>
-                </p:dataTable>
-
-                <p:dialog header="Detalhes da Marca" widgetVar="itemDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
-                    <p:outputPanel id="detalhe" style="text-align:center;">
-                        <p:panelGrid columns="2" rendered="#{not empty marcaMB.marca}" columnClasses="label,value">
-                            <f:facet name="header">
-                                <h:outputLabel>Marca</h:outputLabel>
-                            </f:facet>
-
-                            <h:outputText value="Id"/>
-                            <h:inputText value="#{marcaMB.marca.id}" disabled="#{true}"/>
-
-                            <h:outputText value="Nome"/>
-                            <h:inputText value="#{marcaMB.marca.nome}" disabled="false"/>
-                        </p:panelGrid>
-                        <p:panelGrid columns="2" columnClasses="label,value">
-                            <p:button id="btnFechar" value="Fechar" icon="ui-icon-plusthick"/>
-                        </p:panelGrid>
-                    </p:outputPanel>
-                </p:dialog>
+    <ui:include src="/header.xhtml"/>
+    <h:body>
+        <p:growl id="growl" life="3000" />
+        <div position="north" size="65">
+            <h:form id="menuForm">
+                <p:menubar>
+                    <p:menuitem value="#{bundle.Home}" outcome="/index" icon="ui-icon-home"/>
+                    <p:submenu  label="#{bundle.Maintenance}">
+                        <p:menuitem value="Marca"  outcome="/marca.xhtml" />
+                    </p:submenu>
+                    <p:menuitem value="Itens: #{marcaMB.tamanhoDaLista} " action="#{marcaMB.listarTodos}" update=":listForm:dataList" />
+                        <!-- p:outputLabel  value="Itens Listados: #{marcaMB.tamanhoDaLista} "/ -->
+                </p:menubar>
 
             </h:form>
-        </h:body>
-    </f:view>
+        </div>
+
+
+        <h:form id="listForm" prependId="false">
+            <p:growl id="mensagens" showDetail="true" >
+                <p:autoUpdate/>
+            </p:growl>
+            <p:dataTable id="dataList" var="item" value="#{marcaMB.itens}" 
+                         paginator="true" rows="25" emptyMessage="Não há marcas cadastradas."
+                         rowKey="#{item.id}" selectionMode="single" 
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}
+                         {RowsPerPageDropdown} {Exporters}" 
+                         selection="#{marcaMB.selected}"
+                         rowsPerPageTemplate="10,15,25,50,100">
+                <f:facet name="{Exporters}">
+                    <h:commandLink id="exportExcel">
+                        <p:graphicImage name="/images/excel.png" width="24"/>
+                        <p:dataExporter type="xls" target="dataList" fileName="listaMarcas"/>
+                    </h:commandLink>
+                    <h:commandLink id="exportPDF">
+                        <p:graphicImage name="/images/pdf.png" width="24"/>
+                        <p:dataExporter type="pdf" target="dataList" fileName="listaMarcas"/>
+                    </h:commandLink>
+                    <h:commandLink id="exportCSV">
+                        <p:graphicImage name="/images/csv.png" width="24"/>
+                        <p:dataExporter type="csv" target="dataList" fileName="listaMarcas"/>
+                    </h:commandLink>
+                    <h:commandLink id="exportXML">
+                        <p:graphicImage name="/images/xml.png" width="24"/>
+                        <p:dataExporter type="xml" target="dataList" fileName="listaMarcas"/>
+                    </h:commandLink>
+                </f:facet>
+                <p:ajax event="rowSelect"   update="createButton"/>
+                <p:ajax event="rowUnselect" update="createButton"/>
+
+                <p:column headerText="ID" style="width: 6%;" sortBy="#{item.id}"
+                          filterMatchMode="contains"
+                          filterBy="#{item.id}">
+                    <h:outputText id="outputMatricula"
+                                  value="#{item.id}"/>
+                </p:column>
+                <p:column headerText="Nome" style="width: 25%;" sortBy="#{item.nome}"
+                          filterMatchMode="contains"
+                          filterBy="#{item.nome}">
+                    <h:outputText id="outputNome"
+                                  value="#{item.nome}"/>
+                </p:column>
+                <p:column style="width:10%;text-align: center" headerText="Acoes" exportable="false">
+                    <p:commandButton update=":listForm:detalhe" oncomplete="PF('viewDialog').show()"
+                                     icon="ui-icon-search"
+                                     title="Detalhe">
+                        <f:setPropertyActionListener value="#{item}" target="#{marcaMB.selected}"/>
+                    </p:commandButton>
+                </p:column>
+                <f:facet name="footer">
+                    <p:commandButton id="reloadButton" value="Reload" icon="ui-icon-search" action="#{marcaMB.listarTodos}" update=":dataList"/>        
+                    <p:commandButton id="createButton" value="Novo"  icon="ui-icon-plus" actionListener="#{marcaMB.prepareCreate}" update=":createForm" oncomplete="PF('createDialog').show()"/>
+                    <p:commandButton id="updateButton" value="Editar"  icon="ui-icon-pencil" update=":dataList"/>       
+                    <p:commandButton id="deleteButton" value="Remover" icon="ui-icon-trash" update=":dataList"/>       
+                </f:facet>
+            </p:dataTable>
+            <!-- VIEW -->
+            <p:dialog header="Detalhes Do Objeto" widgetVar="viewDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+                <p:outputPanel id="detalhe" style="text-align:center;">
+                    <p:panelGrid columns="2" rendered="#{not empty marcaMB.selected}" columnClasses="label,value">
+                        <f:facet name="header">
+                            <h:outputLabel>Marca</h:outputLabel>
+                        </f:facet>
+                        <h:outputText value="Id"/>
+                        <h:inputText value="#{marcaMB.selected.id}" disabled="#{true}"/>
+                        <h:outputText value="Nome"/>
+                        <h:inputText value="#{marcaMB.selected.nome}" disabled="false"/>
+                    </p:panelGrid>
+                    <p:panelGrid columns="2" columnClasses="label,value">
+                        <p:button id="btnFechar" value="Fechar" icon="ui-icon-plusthick"/>
+                    </p:panelGrid>
+                </p:outputPanel>
+            </p:dialog>
+        </h:form>
+
+        <!-- CREATE -->
+        <p:dialog id="createDlg" widgetVar="createDialog" modal="true" resizable="false" appendTo="@(body)" header="Novo Iten">
+            <h:form id="createForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{marcaMB.selected != null}">
+                        <p:outputLabel value="Id}" for="id" />
+                        <p:inputText id="id" value="#{marcaMB.selected.id}" title="Id}" required="false" disabled="true" requiredMessage="Novo Item Criado"/>
+                        <p:outputLabel value="Nome" for="nome" />
+                        <p:inputText id="nome" value="#{marcaMB.selected.nome}" title="Nome" />
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{marcaMB.create}" label="Salvar" value="Salvar" update="display,:listForm:dataList,:growl" oncomplete="handleSubmit(args,'createDialog');"/>
+                    <p:commandButton value="Cancelar" onclick="createDialog.hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+        <!-- EDIT -->
+    </h:body>
+
 </html>

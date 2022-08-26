@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit this template
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    
+      <div position="north" size="65" header="#{bundle.AppName}">
+            <h:form id="menuForm">
+                <p:menubar>
+                    <p:menuitem value="#{bundle.Home}" outcome="/index" icon="ui-icon-home"/>
+                    <p:submenu label="#{bundle.Maintenance}">
+                        <p:menuitem value="Marca" outcome="/jsf/marca/List.xhtml" />
+                      
+                    </p:submenu>
+                </p:menubar>
+
+            </h:form>
+        </div>
+    
+</html>

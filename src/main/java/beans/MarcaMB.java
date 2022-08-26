@@ -22,42 +22,51 @@ public class MarcaMB implements Serializable {
 
     @Getter
     @Setter
-    private List<Marca> marcas = new ArrayList<>();
+    private List<Marca> itens = new ArrayList<>();
 
     @Getter
     @Setter
-    private Marca marca;
+    private Marca selected;
 
     @Inject
-    private MarcaFacade marcaFacade;
+    private MarcaFacade dao;
 
     @PostConstruct
     public void listarTodos() {
-        marcas = marcaFacade.findAll();
+        itens = dao.findAll();
         System.out.println("Postconstruct Invocado, Lista:" + getTamanhoDaLista());
     }
     
     @Transactional
-    public void salvar() {
+    public void create() {
         try {
-            marcaFacade.create(marca);
-            System.out.println("salvando....OK");
-            //return "Item Salvo";
+            if(this.selected.getId() != null){
+                dao.edit(selected);
+                System.out.println("Atualizando....OK");
+            }else{
+                dao.create(selected);
+                System.out.println("salvando....OK");
+            }
 
         } catch (Exception e) {
             System.out.println("Erro ao Salvar....");
+            e.printStackTrace();
             //return "Erro ao Salvar";
         }
     }
-    
+    public Marca prepareCreate() {
+        selected = new Marca();
+        System.out.println("prepareCreate....");
+        return selected;
+    }
     @Transactional
     public void update() {
-        marcaFacade.edit(marca);
-        System.out.println("Update de Marca....");
+        dao.edit(selected);
+       
     }
 
     public Integer getTamanhoDaLista() {
-        return marcas.size();
+        return itens.size();
     }
 
     public void setTamanhoDaLista(Integer size) {
