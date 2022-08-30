@@ -29,8 +29,8 @@
             <p:growl id="mensagens" showDetail="true" >
                 <p:autoUpdate/>
             </p:growl>
-            <p:dataTable id="dataList" var="item" value="#{marcaMB.itens}" 
-                         paginator="true" rows="25" emptyMessage="Não há marcas cadastradas."
+            <p:dataTable id="dataList" widgetVar="dataList" var="item" value="#{marcaMB.itens}" 
+                         paginator="true" rows="10" emptyMessage="Não há marcas cadastradas."
                          rowKey="#{item.id}" selectionMode="single" 
                          paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}
                          {RowsPerPageDropdown} {Exporters}" 
@@ -54,8 +54,9 @@
                         <p:dataExporter type="xml" target="dataList" fileName="listaMarcas"/>
                     </h:commandLink>
                 </f:facet>
-                <p:ajax event="rowSelect"   update="createButton"/>
-                <p:ajax event="rowUnselect" update="createButton"/>
+                
+                <p:ajax event="rowSelect"   update="createButton updateButton deleteButton" />
+                <p:ajax event="rowUnselect" update="createButton updateButton deleteButton"/>
 
                 <p:column headerText="ID" style="width: 6%;" sortBy="#{item.id}"
                           filterMatchMode="contains"
@@ -70,7 +71,7 @@
                                   value="#{item.nome}"/>
                 </p:column>
                 <p:column style="width:10%;text-align: center" headerText="Acoes" exportable="false">
-                    <p:commandButton update=":listForm:detalhe" oncomplete="PF('viewDialog').show()"
+                    <p:commandButton update="dataList" oncomplete="PF('viewDialog').show()"
                                      icon="ui-icon-search"
                                      title="Detalhe">
                         <f:setPropertyActionListener value="#{item}" target="#{marcaMB.selected}"/>
@@ -78,9 +79,11 @@
                 </p:column>
                 <f:facet name="footer">
                     <p:commandButton id="reloadButton" value="Reload" icon="ui-icon-search" action="#{marcaMB.listarTodos}" update=":dataList"/>        
-                    <p:commandButton id="createButton" value="Novo"  icon="ui-icon-plus" actionListener="#{marcaMB.prepareCreate}" update=":createForm" oncomplete="PF('createDialog').show()"/>
-                    <p:commandButton id="updateButton" value="Editar"  icon="ui-icon-pencil" update=":dataList"/>       
-                    <p:commandButton id="deleteButton" value="Remover" icon="ui-icon-trash" update=":dataList"/>       
+                    <p:commandButton id="createButton" value="Novo" icon="ui-icon-plus" actionListener="#{marcaMB.prepareCreate}" update=":createForm" oncomplete="PF('createDialog').show()"/>   
+                     <p:commandButton id="updateButton" value="Editar" icon="ui-icon-pencil" update=":editForm,:growl" oncomplete="PF('editDialog').show()" disabled="#{empty marcaMB.selected}"/>
+                    <p:commandButton id="deleteButton" value="Remover" icon="ui-icon-trash" 
+                                     actionListener="#{marcaMB.delete}" update=":growl,listForm" disabled="#{empty marcaMB.selected}"
+                                     oncomplete="PF('dataList').unselectAllRows()" action="#{marcaMB.listarTodos}" />       
                 </f:facet>
             </p:dataTable>
             <!-- VIEW -->
@@ -108,16 +111,33 @@
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{marcaMB.selected != null}">
                         <p:outputLabel value="Id}" for="id" />
-                        <p:inputText id="id" value="#{marcaMB.selected.id}" title="Id}" required="false" disabled="true" requiredMessage="Novo Item Criado"/>
+                        <p:inputText id="id" value="#{marcaMB.selected.id}" title="Id}" required="false" disabled="true"/>
                         <p:outputLabel value="Nome" for="nome" />
-                        <p:inputText id="nome" value="#{marcaMB.selected.nome}" title="Nome" />
+                        <p:inputText id="nome" value="#{marcaMB.selected.nome}" title="Nome" required="true" requiredMessage="Informe o Nome" />
                     </p:panelGrid>
-                    <p:commandButton actionListener="#{marcaMB.create}" label="Salvar" value="Salvar" update="display,:listForm:dataList,:growl" oncomplete="handleSubmit(args,'createDialog');"/>
+                    <p:commandButton actionListener="#{marcaMB.create}"  label="Salvar" value="Salvar" 
+                                     update="display,:listForm:dataList,:growl" oncomplete="handleSubmit(args,'createDialog');"
+                                     action="#{marcaMB.listarTodos}"/>
                     <p:commandButton value="Cancelar" onclick="createDialog.hide()"/>
                 </h:panelGroup>
             </h:form>
         </p:dialog>
         <!-- EDIT -->
+        <p:dialog id="editDlg" widgetVar="editDialog" modal="true" resizable="false" appendTo="@(body)" header="Editar Marca">
+            <h:form id="editForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{marcaMB.selected != null}">
+                        <p:outputLabel value="Id}" for="id" />
+                        <p:inputText id="id" value="#{marcaMB.selected.id}" title="Id}" required="false" disabled="true"/>
+                        <p:outputLabel value="Nome" for="nome" />
+                        <p:inputText id="nome" value="#{marcaMB.selected.nome}" title="Nome" required="true" requiredMessage="Informe o Nome" />
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{marcaMB.update}" label="Salvar" value="Salvar" update="display,:listForm:dataList,:growl"
+                                      oncomplete="handleSubmit(args,'editDialog');"  disabled="#{empty marcaMB.selected}"/>
+                    <p:commandButton value="Cancelar" onclick="editDialog.hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
     </h:body>
 
 </html>

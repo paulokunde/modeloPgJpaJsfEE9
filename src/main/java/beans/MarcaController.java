@@ -69,7 +69,7 @@ public class MarcaController implements Serializable {
 
     @Transactional
     public void destroy() {
-        persist(JsfUtil.PersistAction.DELETE, ResourceBundle.getBundle("/Bundle").getString("MarcaDeleted"));
+        persist(JsfUtil.PersistAction.DELETE, "Objeto Removido");
         if (!JsfUtil.isValidationFailed()) {
             selected = null; // Remove selection
             items = null;    // Invalidate list of items to trigger re-query.

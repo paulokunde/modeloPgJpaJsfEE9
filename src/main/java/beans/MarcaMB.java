@@ -1,25 +1,25 @@
 package beans;
 
-//import br.com.feltex.academicnet.repositorio.AlunoRepositorio;
+import static controles.util.JsfUtil.addErrorMessage;
+import static controles.util.JsfUtil.addSuccessMessage;
 import entidades.Marca;
 import jakarta.annotation.PostConstruct;
-import jakarta.ejb.EJB;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
-import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import java.io.Serializable;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import static java.util.EnumSet.range;
 import java.util.List;
 
 @Named(value = "marcaMB")
 @ViewScoped
 public class MarcaMB implements Serializable {
-
+    
     @Getter
     @Setter
     private List<Marca> itens = new ArrayList<>();
@@ -33,8 +33,15 @@ public class MarcaMB implements Serializable {
 
     @PostConstruct
     public void listarTodos() {
-        itens = dao.findAll();
-        System.out.println("Postconstruct Invocado, Lista:" + getTamanhoDaLista());
+        
+        try {
+            itens = dao.findAll();
+            addSuccessMessage("Itens:"+getTamanhoDaLista()+" listadoss" );
+        } catch (Exception e) {
+            addErrorMessage("Erro ao listar dados");
+        }
+        
+        
     }
     
     @Transactional
@@ -42,16 +49,15 @@ public class MarcaMB implements Serializable {
         try {
             if(this.selected.getId() != null){
                 dao.edit(selected);
-                System.out.println("Atualizando....OK");
+                addSuccessMessage("Item Atualizado");
             }else{
                 dao.create(selected);
-                System.out.println("salvando....OK");
+                addSuccessMessage("Item Criado");
             }
 
         } catch (Exception e) {
-            System.out.println("Erro ao Salvar....");
-            e.printStackTrace();
-            //return "Erro ao Salvar";
+            addErrorMessage("Erro ao Remover item");
+            addErrorMessage("Erro ao criar/atualizar o item");
         }
     }
     public Marca prepareCreate() {
@@ -59,12 +65,31 @@ public class MarcaMB implements Serializable {
         System.out.println("prepareCreate....");
         return selected;
     }
+    
+    @Transactional
+    public void delete() {   
+        try {
+            dao.remove(selected);
+            addSuccessMessage("Iten Removido com Sucesso");
+        } catch (Exception e) {
+            addErrorMessage("Erro ao Remover item");
+        }
+    }
+    
+    
+    
     @Transactional
     public void update() {
-        dao.edit(selected);
+        try {
+            dao.edit(selected);
+            addSuccessMessage("Iten Atualizados");
+        } catch (Exception e) {
+            addErrorMessage("Erro ao Remover item");
+        }
+        
        
     }
-
+    
     public Integer getTamanhoDaLista() {
         return itens.size();
     }
